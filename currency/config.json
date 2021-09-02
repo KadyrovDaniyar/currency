@@ -1,0 +1,12 @@
+{
+  "Port": ":8080",
+  "MsSql": {
+    "Server": "0.0.0.0",
+    "User": "sa",
+    "Password": "reallyStrongPwd123",
+    "Port": 1433,
+    "Db": "test"
+  },
+  "CurrencyURL": "https://nationalbank.kz/rss/get_rates.cfm?fdate=%v",
+  "Swagger": "http://localhost:8080/swagger/doc.json"
+}

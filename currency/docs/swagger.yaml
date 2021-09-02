@@ -1,0 +1,120 @@
+basePath: /currency/{date}
+definitions:
+  models.Response:
+    properties:
+      date:
+        type: string
+      description:
+        type: number
+      fullname:
+        type: string
+      title:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is a currency rates server.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Swagger CurrencyRates
+  version: "1.0"
+paths:
+  /currency/{date}:
+    get:
+      description: get currency to particular date without code on concrete currency
+      parameters:
+      - description: dd.mm.yyyy
+        in: path
+        name: date
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Response'
+            type: array
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "422":
+          description: Unprocessable Entity
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get all currency rates to particular date without code on concrete
+        currency, if it exists on db
+      tags:
+      - currency
+  /currency/{date}/{code}:
+    get:
+      description: get currency to particular date without code on concrete currency
+      parameters:
+      - description: dd.mm.yyyy
+        in: path
+        name: date
+        required: true
+        type: string
+      - description: 3 digit string
+        in: path
+        name: code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "422":
+          description: Unprocessable Entity
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get particular currency rate in particular date, if it exists on db
+      tags:
+      - currency
+  /currency/save/{date}:
+    get:
+      description: save currency by date, if exists on particular date then respond
+        message already exists
+      parameters:
+      - description: dd.mm.yyyy
+        in: path
+        name: date
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "422":
+          description: Unprocessable Entity
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Save currency to particular date
+      tags:
+      - currency/save
+swagger: "2.0"
