@@ -46,7 +46,9 @@ func CheckDateFormat(date string) (err error) {
 	return
 }
 
-func ChangeDateFormat(date string) (changeDate time.Time, err error) {
-	changeDate, err = time.Parse(layout,date)
+func ChangeDateFormat(date string) (changeDate string, err error) {
+	t, err := time.Parse(layout,date)
+	changeDate = t.Format(layoutDb)
+
 	return
 }
