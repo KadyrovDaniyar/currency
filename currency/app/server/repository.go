@@ -77,7 +77,7 @@ func(s *Server) FindWithDate(date string) (rates []*models.R_currency, err error
 	for result.Next() {
 		rate := models.R_currency{}
 
-		err = s.db.QueryRow(query).Scan(&rate.Title, &rate.Code, &rate.Value, &rate.A_date)
+		err = result.Scan(&rate.Title, &rate.Code, &rate.Value, &rate.A_date)
 		if err != nil {
 			return nil, err
 		}
@@ -85,7 +85,7 @@ func(s *Server) FindWithDate(date string) (rates []*models.R_currency, err error
 		rates = append(rates,&rate)
 	}
 
-	return
+	return rates, nil
 }
 
 func(s *Server) FindWithDateAndCode(date string, code string) (rates []*models.R_currency, err error) {
@@ -105,7 +105,7 @@ func(s *Server) FindWithDateAndCode(date string, code string) (rates []*models.R
 	for result.Next() {
 		rate := models.R_currency{}
 
-		err = s.db.QueryRow(query).Scan(&rate.Title, &rate.Code, &rate.Value, &rate.A_date)
+		err = result.Scan(&rate.Title, &rate.Code, &rate.Value, &rate.A_date)
 		if err != nil {
 			return nil, err
 		}
