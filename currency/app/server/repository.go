@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"log"
 	"projects/currency/app/models"
 )
@@ -20,12 +21,11 @@ func(s *Server) Create(rates *models.Rates) {
 
 	for _, item := range rates.Items {
 
-		if err := s.db.Create(&models.R_currency{
-			Title: item.Fullname,
-			Code: item.Title,
-			Value: item.Description,
-			A_date: formattedDate,
-		}).Error; err != nil {
+		query := fmt.Sprintf("Insert into R_Currency(Title, Code, Value, A_date) values (N'%s','%s',%v,'%s')",
+			item.Fullname, item.Title, item.Description, formattedDate)
+
+		_, err := s.db.Exec(query)
+		if err != nil {
 			log.Println(err.Error())
 		}
 	}
@@ -38,16 +38,23 @@ func(s *Server) CheckExists(date string) (exists bool, err error) {
 		return false,err
 	}
 
-	var rate *models.R_currency
+	query := fmt.Sprintf("select top 1 * from R_Currency where A_date ='%s'",
+		formattedDate)
 
-	if err = s.db.Where("A_date = ?", formattedDate).First(&rate).Error; err != nil {
+	result, err := s.db.Exec(query)
+	if err != nil {
 		if err.Error() == "record not found"{
 			err = nil
 		}
 		return false, err
 	}
 
-	if rate != nil {
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return false, err
+	}
+
+	if rows > 0 {
 		return true,nil
 	}
 	return false,nil
@@ -59,8 +66,23 @@ func(s *Server) FindWithDate(date string) (rates []*models.R_currency, err error
 		return nil, err
 	}
 
-	if err = s.db.Where("A_date = ?", formattedDate).Find(&rates).Error; err != nil {
+	query := fmt.Sprintf("select Title, Code, Value, A_date from R_Currency where A_date = '%s'",
+		formattedDate)
+
+	result, err := s.db.Query(query)
+	if err != nil {
 		return nil, err
+	}
+
+	for result.Next() {
+		rate := models.R_currency{}
+
+		err = s.db.QueryRow(query).Scan(&rate.Title, &rate.Code, &rate.Value, &rate.A_date)
+		if err != nil {
+			return nil, err
+		}
+
+		rates = append(rates,&rate)
 	}
 
 	return
@@ -72,8 +94,23 @@ func(s *Server) FindWithDateAndCode(date string, code string) (rates []*models.R
 		return nil, err
 	}
 
-	if err = s.db.Where("A_date = ? and Code = ?", formattedDate, code).Find(&rates).Error; err != nil {
+	query := fmt.Sprintf("select Title, Code, Value, A_date from R_Currency where A_date = '%s' and Code = '%s'",
+		formattedDate, code)
+
+	result, err := s.db.Query(query)
+	if err != nil {
 		return nil, err
+	}
+
+	for result.Next() {
+		rate := models.R_currency{}
+
+		err = s.db.QueryRow(query).Scan(&rate.Title, &rate.Code, &rate.Value, &rate.A_date)
+		if err != nil {
+			return nil, err
+		}
+
+		rates = append(rates,&rate)
 	}
 
 	return
